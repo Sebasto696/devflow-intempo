@@ -43,7 +43,7 @@ En lugar de redactar historias de usuario manualmente, compilar reportes de spri
 | 03 | **Reporte de Sprint** | ✅ Activo | Genera reportes ejecutivos de sprint con métricas, distribución del equipo y exportación a PDF |
 | 04 | Monitor de Pipelines | 🔜 Próximo | Alertas inteligentes de CI/CD con sugerencias de resolución |
 | 05 | Code Review | 🔜 Próximo | Revisión automática de Pull Requests en Azure Repos |
-| 06 | Hub Empresarial | 🔜 Próximo | Orquestación multi-sistema con integración al CRM |
+
 
 ---
 
