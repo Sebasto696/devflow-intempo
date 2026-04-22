@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevFlow — Plataforma de Automatización · Intempo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --ink:#0D0F14;--ink2:#1C1F29;--ink3:#252933;
+  --line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.13);
+  --text:#E8EAF0;--muted:#8B909E;
+  --teal:#00D4AA;--teal-dim:rgba(0,212,170,0.10);--teal-mid:rgba(0,212,170,0.22);
+  --amber:#F5A623;--amber-dim:rgba(245,166,35,0.10);
+  --coral:#FF6B6B;--coral-dim:rgba(255,107,107,0.10);
+  --blue:#4A9EFF;--blue-dim:rgba(74,158,255,0.10);
+  --purple:#A78BFA;--purple-dim:rgba(167,139,250,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.container{max-width:860px;margin:0 auto;padding:0 2rem}
+.label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal)}
+.section-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted);display:block;margin-bottom:6px}
+h2{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:#fff;line-height:1.2;margin-bottom:1.25rem}
+h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;color:#fff;letter-spacing:-.01em;margin-bottom:.5rem}
+p{color:var(--muted);margin-bottom:1rem;font-weight:300}
+p:last-child{margin-bottom:0}
+p strong{color:var(--text);font-weight:500}
+section{padding:5rem 0;border-bottom:1px solid var(--line)}
+
+/* COVER */
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:3rem 0 3.5rem;position:relative;overflow:hidden;border-bottom:1px solid var(--line2)}
+.cover-bg{position:absolute;inset:0;background-image:radial-gradient(ellipse 70% 55% at 75% 15%,rgba(0,212,170,0.08) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 15% 85%,rgba(74,158,255,0.06) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 85% 75%,rgba(167,139,250,0.05) 0%,transparent 60%);pointer-events:none}
+.cover-grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse 80% 80% at 50% 30%,black 0%,transparent 80%);pointer-events:none}
+.cover-logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;letter-spacing:.06em}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+.cover-main{position:relative;padding:5rem 0 2rem}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--teal-mid);background:var(--teal-dim);border-radius:2px;padding:6px 14px;margin-bottom:2.5rem;animation:fadeUp .6s ease both}
+.eyebrow span{font-size:12px;color:var(--teal);font-weight:500;letter-spacing:.04em}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;color:#fff;max-width:700px;margin-bottom:1.5rem;animation:fadeUp .6s ease .1s both}
+h1 .a{color:var(--teal)} h1 .b{color:var(--blue)}
+.cover-sub{font-size:1rem;color:var(--muted);max-width:520px;font-weight:300;line-height:1.75;margin-bottom:2.5rem;animation:fadeUp .6s ease .2s both}
+.cover-meta{display:flex;gap:2.5rem;flex-wrap:wrap;animation:fadeUp .6s ease .3s both}
+.cover-meta dt{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.cover-meta dd{font-size:14px;font-weight:500;color:var(--text)}
+.cover-bottom{position:relative;display:flex;justify-content:space-between;align-items:flex-end;padding-top:2rem;border-top:1px solid var(--line)}
+.cover-kpis{display:flex;gap:3rem}
+.kpi-val{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:#fff;line-height:1;margin-bottom:4px}
+.kpi-val span{color:var(--teal)}
+.kpi-lbl{font-size:12px;color:var(--muted)}
+.page-tag{font-size:11px;color:var(--muted);letter-spacing:.08em}
+
+/* VISION */
+.vision-band{background:linear-gradient(135deg,var(--ink2) 0%,rgba(0,212,170,0.05) 100%);border:1px solid var(--teal-mid);border-radius:4px;padding:2.5rem;margin:2.5rem 0;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center}
+.vision-tag{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:.75rem}
+.vision-band h3{font-size:1.25rem;margin-bottom:.5rem}
+.vision-band p{font-size:.95rem}
+.vision-stat{text-align:center;min-width:120px}
+.vision-stat-val{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--teal);line-height:1;margin-bottom:6px}
+.vision-stat-lbl{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* PROBLEM */
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin-top:2.5rem}
+.problem-cell{background:var(--ink2);padding:1.75rem;transition:background .2s}
+.problem-cell:hover{background:var(--ink3)}
+.problem-icon{font-size:1.4rem;margin-bottom:.75rem}
+.problem-cell h3{font-size:.95rem}
+.problem-cell p{font-size:.88rem}
+.crm-note{margin-top:2rem;padding:1.25rem 1.5rem;border:1px solid rgba(245,166,35,.3);background:var(--amber-dim);border-radius:4px;display:flex;gap:1rem;align-items:flex-start}
+.crm-note-icon{font-size:1.2rem;flex-shrink:0;padding-top:2px}
+.crm-note p{font-size:.9rem;color:var(--text);margin:0}
+.crm-note strong{color:var(--amber)}
+
+/* STRATEGY */
+.strategy-cols{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin:2rem 0}
+.strategy-col{background:var(--ink2);padding:2rem}
+.s-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-bottom:1rem}
+.s-badge.no{background:var(--coral-dim);color:var(--coral);border:1px solid rgba(255,107,107,.3)}
+.s-badge.yes{background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal-mid)}
+.s-title{font-size:1.1rem;font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.5rem}
+
+/* MODULES */
+.module-list{display:grid;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin-top:2rem}
+.module-row{background:var(--ink2);display:grid;grid-template-columns:52px 1fr auto;align-items:center;transition:background .2s}
+.module-row:hover{background:var(--ink3)}
+.module-num{display:flex;align-items:center;justify-content:center;height:100%;border-right:1px solid var(--line2);padding:1.25rem .75rem;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted)}
+.module-body{padding:1.25rem 1.5rem}
+.module-body h3{font-size:.95rem;margin-bottom:.3rem}
+.module-body p{font-size:.85rem;margin:0}
+.module-status{padding:0 1.5rem;white-space:nowrap}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:2px}
+.status-pill.now{background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal-mid)}
+.status-pill.p2{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,158,255,.3)}
+.status-pill.p3{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+.module-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:2px;margin-right:4px;margin-top:4px;background:var(--ink3);border:1px solid var(--line2);color:var(--muted)}
+
+/* PROTO FLOW */
+.proto-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin:2rem 0}
+.proto-step{background:var(--ink2);padding:1.5rem 1rem;text-align:center}
+.proto-step.active{background:var(--teal-dim)}
+.proto-step-icon{font-size:1.4rem;margin-bottom:.6rem}
+.proto-step h3{font-size:.8rem;margin-bottom:.3rem}
+.proto-step p{font-size:.75rem}
+.proto-step.active h3{color:var(--teal)}
+.active-label{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
+
+/* TECH */
+.stack-wrap{margin-top:2rem;display:grid;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden}
+.stack-row{display:grid;grid-template-columns:130px 1fr;gap:1px;background:var(--line2)}
+.stack-label{background:var(--ink3);padding:1rem 1.25rem;display:flex;align-items:center}
+.stack-label span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stack-cell{background:var(--ink2);padding:1rem 1.5rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:500;padding:4px 12px;border-radius:2px;border:1px solid}
+.pill.t{border-color:var(--teal-mid);color:var(--teal);background:var(--teal-dim)}
+.pill.b{border-color:rgba(74,158,255,.25);color:var(--blue);background:var(--blue-dim)}
+.pill.a{border-color:rgba(245,166,35,.25);color:var(--amber);background:var(--amber-dim)}
+.pill.p{border-color:rgba(167,139,250,.25);color:var(--purple);background:var(--purple-dim)}
+.stack-note{font-size:12px;color:var(--muted)}
+
+/* TIMELINE */
+.timeline{margin-top:2.5rem;position:relative}
+.tl-track{position:absolute;left:22px;top:0;bottom:0;width:2px;background:var(--line2)}
+.tl-item{display:grid;grid-template-columns:48px 1fr;gap:1.5rem;margin-bottom:2rem;position:relative}
+.tl-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;flex-shrink:0;z-index:1}
+.tl-dot.d1{background:var(--teal-dim);border:2px solid var(--teal);color:var(--teal)}
+.tl-dot.d2{background:var(--blue-dim);border:2px solid var(--blue);color:var(--blue)}
+.tl-dot.d3{background:var(--amber-dim);border:2px solid var(--amber);color:var(--amber)}
+.tl-dot.d4{background:var(--purple-dim);border:2px solid var(--purple);color:var(--purple)}
+.tl-body{background:var(--ink2);border:1px solid var(--line2);border-radius:4px;padding:1.5rem}
+.tl-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
+.tl-title-wrap h3{font-size:1rem;margin-bottom:2px}
+.tl-duration{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.tl-body p{font-size:.88rem;margin-bottom:1rem}
+.tl-deliverables{display:flex;flex-wrap:wrap;gap:.4rem}
+.deliverable{font-size:11px;padding:3px 10px;border-radius:2px;background:var(--ink3);border:1px solid var(--line2);color:var(--muted)}
+
+/* ROI */
+.roi-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin:2rem 0}
+.roi-box{background:var(--ink2);padding:1.5rem;text-align:center}
+.roi-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;margin-bottom:6px}
+.roi-lbl{font-size:12px;color:var(--muted)}
+.roi-before-after{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin-top:1px}
+.ba-col{background:var(--ink2);padding:1.75rem}
+.ba-col h3{font-size:.9rem;margin-bottom:1rem;color:var(--muted);font-weight:400}
+.ba-item{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem}
+.ba-icon{flex-shrink:0;width:20px;text-align:center;font-size:.9rem;margin-top:2px}
+.ba-text{font-size:.85rem;color:var(--muted)}
+
+/* ══ COMPETITIVE CHARTS ══ */
+.comp-intro{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:var(--line2);border-radius:4px;overflow:hidden;margin:2rem 0}
+.comp-card{background:var(--ink2);padding:1.5rem;position:relative;cursor:pointer;transition:background .2s}
+.comp-card:hover{background:var(--ink3)}
+.comp-card.highlight{background:var(--teal-dim);border-top:2px solid var(--teal)}
+.comp-card.highlight .comp-name{color:var(--teal)}
+.comp-logo{font-size:1.4rem;margin-bottom:.5rem}
+.comp-name{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:#fff;margin-bottom:.3rem}
+.comp-type{font-size:11px;color:var(--muted)}
+.comp-cost{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;margin-top:.75rem}
+.comp-cost-lbl{font-size:10px;color:var(--muted)}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+.chart-card{background:var(--ink2);border:1px solid var(--line2);border-radius:4px;padding:1.5rem}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:#fff;margin-bottom:.25rem}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:1.25rem}
+.chart-wrap{position:relative}
+
+/* Feature matrix */
+.feat-matrix{width:100%;border-collapse:collapse;margin-top:1rem}
+.feat-matrix th{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--line2)}
+.feat-matrix th.hl{color:var(--teal)}
+.feat-matrix td{padding:.75rem 1rem;font-size:.85rem;border-bottom:1px solid var(--line);color:var(--muted);transition:background .15s}
+.feat-matrix tr:hover td{background:var(--ink3)}
+.feat-matrix td:first-child{color:var(--text);font-weight:400}
+.feat-matrix td.hl{background:rgba(0,212,170,0.04)}
+.check{color:var(--teal);font-size:1rem}
+.cross{color:var(--coral);opacity:.6;font-size:.9rem}
+.partial{color:var(--amber);font-size:.9rem}
+
+/* TABS for chart switcher */
+.tab-bar{display:flex;gap:2px;margin-bottom:1rem;background:var(--ink3);border-radius:3px;padding:3px}
+.tab-btn{flex:1;padding:6px 10px;background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border-radius:2px;transition:all .2s;text-align:center}
+.tab-btn.active{background:var(--ink2);color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* insight callout */
+.insight{display:flex;gap:.75rem;align-items:flex-start;padding:1rem 1.25rem;border-radius:4px;margin-top:1rem}
+.insight.teal{background:var(--teal-dim);border:1px solid var(--teal-mid)}
+.insight.amber{background:var(--amber-dim);border:1px solid rgba(245,166,35,.25)}
+.insight-icon{font-size:1rem;flex-shrink:0;margin-top:2px}
+.insight p{font-size:.85rem;color:var(--text);margin:0}
+.insight strong{color:var(--teal)}
+.insight.amber strong{color:var(--amber)}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,var(--ink2) 0%,rgba(0,212,170,0.06) 100%);border:1px solid var(--teal-mid);border-radius:4px;padding:3.5rem;text-align:center}
+.cta-box h2{margin-bottom:1rem}
+.cta-box p{max-width:480px;margin:0 auto 2rem}
+.cta-pills{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.cta-pill{font-size:13px;font-weight:500;padding:11px 24px;border-radius:2px;cursor:pointer;border:1px solid var(--teal);background:var(--teal);color:var(--ink);letter-spacing:.02em}
+.cta-pill.outline{background:transparent;color:var(--teal)}
+
+/* FOOTER */
+footer{padding:2.5rem 0;border-top:1px solid var(--line)}
+footer .inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.f-logo{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.f-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+footer p{font-size:12px;color:var(--muted);margin:0}
+.confidential{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:680px){
+  .problem-grid,.strategy-cols,.proto-flow,.roi-grid,.roi-before-after,.charts-grid,.comp-intro{grid-template-columns:1fr}
+  .vision-band{grid-template-columns:1fr}
+  .stack-row{grid-template-columns:1fr}
+  .module-row{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+  .module-status{grid-column:2;padding:0 1.5rem .75rem}
+  .cover-kpis{gap:1.5rem}
+  .cover-bottom{flex-direction:column;align-items:flex-start;gap:1rem}
+  .tl-item{grid-template-columns:44px 1fr;gap:1rem}
+  .roi-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-bg"></div><div class="cover-grid"></div>
+  <div class="container"><div class="cover-logo"><span class="logo-dot"></span>INTEMPO · Área de Tecnología</div></div>
+  <div class="container">
+    <div class="cover-main">
+      <div class="eyebrow"><span class="logo-dot" style="width:6px;height:6px"></span><span>Plataforma de Automatización Interna con IA</span></div>
+      <h1>Automatizar el ciclo<br>de <span class="a">desarrollo</span>,<br>de <span class="b">extremo a extremo.</span></h1>
+      <p class="cover-sub">Una plataforma interna que elimina el trabajo repetitivo del equipo de ingeniería, integrada de forma nativa con Azure DevOps y construida para crecer con Intempo.</p>
+      <div class="cover-meta">
+        <dl><dt>Presentado por</dt><dd>Auxiliar de Software — Área de Tecnología</dd></dl>
+        <dl><dt>Dirigido a</dt><dd>Líder de Innovación — Intempo</dd></dl>
+        <dl><dt>Horizonte</dt><dd>Corto · Mediano plazo</dd></dl>
+        <dl><dt>Clasificación</dt><dd>Interno · Confidencial</dd></dl>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="cover-bottom">
+      <div class="cover-kpis">
+        <div><div class="kpi-val">85<span>%</span></div><div class="kpi-lbl">Tiempo ahorrado por historia</div></div>
+        <div><div class="kpi-val">6<span>+</span></div><div class="kpi-lbl">Módulos de automatización</div></div>
+        <div><div class="kpi-val">0<span>€</span></div><div class="kpi-lbl">Dependencia de vendors externos</div></div>
+      </div>
+      <div class="page-tag">PROPUESTA ESTRATÉGICA · 2025</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01. CONTEXTO -->
+<section>
+  <div class="container">
+    <span class="section-num">01 — Contexto y punto de partida</span>
+    <h2>La empresa ya apostó por la IA.<br>El equipo de ingeniería, todavía no.</h2>
+    <p>Intempo ha integrado un CRM con capacidades de IA para procesos de negocio. Esa fue una decisión correcta. Pero el ciclo de desarrollo de software sigue siendo manual, lento y dependiente de personas específicas.</p>
+    <div class="vision-band">
+      <div>
+        <div class="vision-tag">La oportunidad</div>
+        <h3>El CRM cubre el negocio.<br>Esta plataforma cubre la ingeniería.</h3>
+        <p>No competimos con el CRM. Lo complementamos cubriendo la brecha que ningún CRM fue diseñado para resolver: <strong>el proceso interno de desarrollo de software.</strong></p>
+      </div>
+      <div class="vision-stat"><div class="vision-stat-val">0</div><div class="vision-stat-lbl">Integración del CRM<br>con Azure DevOps</div></div>
+    </div>
+    <div class="crm-note">
+      <div class="crm-note-icon">⚡</div>
+      <p>El CRM actual <strong>no tiene integración con Azure DevOps.</strong> Este proyecto cierra esa brecha y construye una capa de automatización que ningún proveedor externo puede ofrecerle a Intempo porque no conoce su proceso tan bien como el propio equipo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02. PROBLEMA -->
+<section>
+  <div class="container">
+    <span class="section-num">02 — El problema</span>
+    <h2>¿Cuánto tiempo pierde el equipo<br>en trabajo que no es desarrollo?</h2>
+    <p>Cada sprint tiene un volumen enorme de trabajo invisible: documentar, formatear, reportar, comunicar. Ese trabajo no produce código ni valor directo.</p>
+    <div class="problem-grid">
+      <div class="problem-cell"><div class="problem-icon">📝</div><h3>Historias de usuario manuales</h3><p>Redactar una historia completa con criterios de aceptación toma entre 2 y 4 horas. Multiplícalo por el volumen de un sprint.</p></div>
+      <div class="problem-cell"><div class="problem-icon">📊</div><h3>Reportes de sprint artesanales</h3><p>Compilar métricas de velocidad, burndown y estado de Work Items se hace a mano con datos que ya existen en el sistema.</p></div>
+      <div class="problem-cell"><div class="problem-icon">📄</div><h3>Documentación técnica incompleta</h3><p>La presión del sprint deja la documentación para después. Ese "después" muchas veces nunca llega, generando deuda técnica invisible.</p></div>
+      <div class="problem-cell"><div class="problem-icon">🔔</div><h3>Alertas y seguimiento reactivo</h3><p>Los bloqueos en pipelines se detectan tarde, cuando ya afectaron la velocidad del equipo.</p></div>
+      <div class="problem-cell"><div class="problem-icon">🔁</div><h3>Reproceso por definición pobre</h3><p>Historias con criterios vagos generan preguntas durante el sprint, bloqueos y retrabajo que nadie presupuestó.</p></div>
+      <div class="problem-cell"><div class="problem-icon">🔒</div><h3>Conocimiento concentrado</h3><p>Cuando el analista clave no está, el proceso se para. La automatización distribuye el conocimiento.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. ESTRATEGIA -->
+<section>
+  <div class="container">
+    <span class="section-num">03 — Estrategia</span>
+    <h2>No una herramienta.<br>Una plataforma que crece.</h2>
+    <p>La diferencia entre un proyecto puntual y una plataforma es que esta última se vuelve más valiosa con el tiempo. Cada módulo que se agrega amplifica el valor de los anteriores.</p>
+    <div class="strategy-cols">
+      <div class="strategy-col">
+        <span class="s-badge no">Enfoque tradicional</span>
+        <div class="s-title" style="color:var(--muted)">Herramienta por herramienta</div>
+        <p style="font-size:.88rem">Cada problema genera una nueva suscripción. El conocimiento queda disperso entre vendors. El costo crece con el equipo.</p>
+      </div>
+      <div class="strategy-col">
+        <span class="s-badge yes">Esta propuesta</span>
+        <div class="s-title">Plataforma interna propia</div>
+        <p style="font-size:.88rem">Un solo sistema construido sobre el proceso real de Intempo. El conocimiento se queda en la empresa. El costo marginal de agregar capacidad es mínimo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. MÓDULOS -->
+<section>
+  <div class="container">
+    <span class="section-num">04 — Módulos de automatización</span>
+    <h2>Seis capas de automatización<br>para todo el ciclo de desarrollo.</h2>
+    <p>Cada módulo resuelve un problema concreto y existente, implementados en orden de impacto y complejidad.</p>
+    <div class="module-list">
+      <div class="module-row">
+        <div class="module-num">01</div>
+        <div class="module-body">
+          <h3>Generador de Historias de Usuario ⚡ Prototipo inicial</h3>
+          <p>El analista describe una funcionalidad en texto libre. La IA genera la historia completa en formato Intempo y la publica como Work Item en Azure Boards con un clic.</p>
+          <div style="margin-top:.5rem"><span class="module-tag">Azure Boards</span><span class="module-tag">GPT-4o / Claude API</span><span class="module-tag">Work Items</span></div>
+        </div>
+        <div class="module-status"><span class="status-pill now">Fase 1 · Prototipo</span></div>
+      </div>
+      <div class="module-row">
+        <div class="module-num">02</div>
+        <div class="module-body">
+          <h3>Generador de Documentación Técnica</h3>
+          <p>A partir del código fuente o historias completadas, genera documentación técnica, diagramas y READMEs actualizados automáticamente.</p>
+          <div style="margin-top:.5rem"><span class="module-tag">Azure Repos</span><span class="module-tag">Azure Wiki</span><span class="module-tag">Markdown</span></div>
+        </div>
+        <div class="module-status"><span class="status-pill p2">Fase 2</span></div>
+      </div>
+      <div class="module-row">
+        <div class="module-num">03</div>
+        <div class="module-body">
+          <h3>Reporte Automático de Sprint</h3>
+          <p>Al cierre de cada sprint, extrae métricas de Azure DevOps y genera un reporte listo para presentar en la retrospectiva.</p>
+          <div style="margin-top:.5rem"><span class="module-tag">Azure DevOps API</span><span class="module-tag">Sprint Analytics</span><span class="module-tag">Burndown</span></div>
+        </div>
+        <div class="module-status"><span class="status-pill p2">Fase 2</span></div>
+      </div>
+      <div class="module-row">
+        <div class="module-num">04</div>
+        <div class="module-body">
+          <h3>Monitor Inteligente de Pipelines</h3>
+          <p>Monitoreo continuo de CI/CD en Azure DevOps. Cuando un build falla, notifica con contexto del error y una sugerencia de resolución.</p>
+          <div style="margin-top:.5rem"><span class="module-tag">Azure Pipelines</span><span class="module-tag">CI/CD</span><span class="module-tag">Alertas inteligentes</span></div>
+        </div>
+        <div class="module-status"><span class="status-pill p2">Fase 2</span></div>
+      </div>
+      <div class="module-row">
+        <div class="module-num">05</div>
+        <div class="module-body">
+          <h3>Asistente de Code Review</h3>
+          <p>Revisión automática de Pull Requests en Azure Repos. La IA detecta patrones de riesgo y deja comentarios directamente en el PR.</p>
+          <div style="margin-top:.5rem"><span class="module-tag">Azure Repos</span><span class="module-tag">Pull Requests</span><span class="module-tag">Análisis estático</span></div>
+        </div>
+        <div class="module-status"><span class="status-pill p3">Fase 3</span></div>
+      </div>
+      <div class="module-row">
+        <div class="module-num">06</div>
+        <div class="module-body">
+          <h3>Hub de Automatización Empresarial</h3>
+          <p>Capa de orquestación que conecta todos los módulos con otros sistemas de Intempo, incluyendo el CRM actual.</p>
+          <div style="margin-top:.5rem"><span class="module-tag">CRM Integration</span><span class="module-tag">Webhooks</span><span class="module-tag">Orquestación</span></div>
+        </div>
+        <div class="module-status"><span class="status-pill p3">Fase 3</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. PROTOTIPO -->
+<section>
+  <div class="container">
+    <span class="section-num">05 — El prototipo</span>
+    <h2>Una victoria rápida y concreta<br>para ganar confianza.</h2>
+    <p>El Módulo 01 puede tener un prototipo funcional en <strong>5 días hábiles.</strong></p>
+    <div class="proto-flow">
+      <div class="proto-step"><div class="proto-step-icon">💬</div><h3>Descripción libre</h3><p>El analista describe la funcionalidad en texto</p></div>
+      <div class="proto-step active"><span class="active-label">IA procesa</span><div class="proto-step-icon">🧠</div><h3>Generación</h3><p>La IA estructura la historia en formato Intempo</p></div>
+      <div class="proto-step"><div class="proto-step-icon">✅</div><h3>Revisión</h3><p>El analista valida en segundos</p></div>
+      <div class="proto-step active"><span class="active-label">Integración</span><div class="proto-step-icon">🔗</div><h3>Push automático</h3><p>Work Item creado en Azure Boards</p></div>
+      <div class="proto-step"><div class="proto-step-icon">🚀</div><h3>Al sprint</h3><p>Disponible para estimar de inmediato</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. STACK -->
+<section>
+  <div class="container">
+    <span class="section-num">06 — Arquitectura técnica</span>
+    <h2>Construido para durar,<br>no para demostrar.</h2>
+    <p>Stack elegido para maximizar la mantenibilidad del equipo de Intempo y minimizar dependencias externas.</p>
+    <div class="stack-wrap">
+      <div class="stack-row"><div class="stack-label"><span>Frontend</span></div><div class="stack-cell"><span class="pill b">React + Vite</span><span class="pill b">Tailwind CSS</span><span class="stack-note">Interfaz web interna, sin instalaciones</span></div></div>
+      <div class="stack-row"><div class="stack-label"><span>Backend</span></div><div class="stack-cell"><span class="pill t">Node.js + Express</span><span class="pill t">REST API</span><span class="stack-note">API modular que orquesta IA y Azure DevOps</span></div></div>
+      <div class="stack-row"><div class="stack-label"><span>IA</span></div><div class="stack-cell"><span class="pill t">OpenAI GPT-4o</span><span class="pill t">Claude API</span><span class="stack-note">Costo estimado &lt;$20 USD/mes · Opción local con Ollama</span></div></div>
+      <div class="stack-row"><div class="stack-label"><span>Integración</span></div><div class="stack-cell"><span class="pill a">Azure DevOps REST API</span><span class="pill a">Azure Boards</span><span class="pill a">Azure Repos</span><span class="pill a">Azure Pipelines</span></div></div>
+      <div class="stack-row"><div class="stack-label"><span>Base de datos</span></div><div class="stack-cell"><span class="pill p">PostgreSQL</span><span class="stack-note">Historial, feedback y métricas de mejora continua</span></div></div>
+      <div class="stack-row"><div class="stack-label"><span>Despliegue</span></div><div class="stack-cell"><span class="pill b">Servidor interno</span><span class="stack-note">Sin nube obligatoria · Control total de Intempo</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. ROADMAP -->
+<section>
+  <div class="container">
+    <span class="section-num">07 — Roadmap de implementación</span>
+    <h2>Resultados desde la semana uno.<br>Visión a seis meses.</h2>
+    <p>Cada fase entrega valor real que justifica la inversión en la siguiente.</p>
+    <div class="timeline">
+      <div class="tl-track"></div>
+      <div class="tl-item">
+        <div class="tl-dot d1">F1</div>
+        <div class="tl-body">
+          <div class="tl-header"><div class="tl-title-wrap"><h3>Prototipo funcional — Módulo 01</h3><div class="tl-duration">⏱ Semanas 1 – 2</div></div><span class="status-pill now">Quick win</span></div>
+          <p>Generador de historias de usuario operativo, integrado con Azure Boards. El equipo empieza a usarlo desde el primer día.</p>
+          <div class="tl-deliverables"><span class="deliverable">Interfaz web funcional</span><span class="deliverable">Integración Azure Boards</span><span class="deliverable">Formato Intempo</span><span class="deliverable">Criterios de aceptación automáticos</span></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot d2">F2</div>
+        <div class="tl-body">
+          <div class="tl-header"><div class="tl-title-wrap"><h3>Expansión del ciclo — Módulos 02, 03, 04</h3><div class="tl-duration">⏱ Semanas 3 – 8</div></div><span class="status-pill p2">Fase 2</span></div>
+          <p>La plataforma cubre el sprint completo de principio a fin: documentación, reportes y monitoreo de pipelines.</p>
+          <div class="tl-deliverables"><span class="deliverable">Documentación automática</span><span class="deliverable">Reportes de sprint</span><span class="deliverable">Monitor de pipelines</span><span class="deliverable">Dashboard de métricas</span></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot d3">F3</div>
+        <div class="tl-body">
+          <div class="tl-header"><div class="tl-title-wrap"><h3>Calidad y revisión — Módulo 05</h3><div class="tl-duration">⏱ Semanas 9 – 14</div></div><span class="status-pill p3">Fase 3</span></div>
+          <p>Asistente de code review integrado en Pull Requests de Azure Repos, acelerando los ciclos de merge.</p>
+          <div class="tl-deliverables"><span class="deliverable">PR Review automático</span><span class="deliverable">Detección de riesgos</span><span class="deliverable">Historial de revisiones</span></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot d4">F4</div>
+        <div class="tl-body">
+          <div class="tl-header"><div class="tl-title-wrap"><h3>Hub empresarial — Módulo 06</h3><div class="tl-duration">⏱ Mes 4 – 6</div></div><span class="status-pill p3">Fase 4</span></div>
+          <p>La plataforma conecta Azure DevOps con el CRM y otros sistemas. Los requerimientos de negocio fluyen directamente hacia Work Items.</p>
+          <div class="tl-deliverables"><span class="deliverable">Integración con CRM</span><span class="deliverable">Orquestación multi-sistema</span><span class="deliverable">SSO Intempo</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. ROI -->
+<section>
+  <div class="container">
+    <span class="section-num">08 — Retorno sobre la inversión</span>
+    <h2>El ahorro se mide en horas.<br>El impacto, en sprints.</h2>
+    <p>Con base en estimaciones conservadoras: <strong>10 historias por sprint</strong>, 2 sprints por mes y <strong>2.5 horas promedio</strong> por historia en el proceso actual.</p>
+    <div class="roi-grid">
+      <div class="roi-box"><div class="roi-val" style="color:var(--coral)">2.5h</div><div class="roi-lbl">Tiempo actual · Por historia</div></div>
+      <div class="roi-box"><div class="roi-val" style="color:var(--teal)">15min</div><div class="roi-lbl">Tiempo estimado · Con IA</div></div>
+      <div class="roi-box"><div class="roi-val" style="color:var(--blue)">200h</div><div class="roi-lbl">Horas recuperadas · Al año</div></div>
+      <div class="roi-box"><div class="roi-val" style="color:var(--amber)">&lt;$20</div><div class="roi-lbl">Costo mensual API · USD</div></div>
+    </div>
+    <div class="roi-before-after" style="margin-top:1px">
+      <div class="ba-col">
+        <h3>⛔ Sin la plataforma</h3>
+        <div class="ba-item"><div class="ba-icon">⏳</div><div class="ba-text">Historias tardando 2–4 horas cada una</div></div>
+        <div class="ba-item"><div class="ba-icon">📋</div><div class="ba-text">Reportes de sprint compilados a mano</div></div>
+        <div class="ba-item"><div class="ba-icon">🔇</div><div class="ba-text">Fallos de pipeline detectados tarde</div></div>
+        <div class="ba-item"><div class="ba-icon">📉</div><div class="ba-text">Documentación desactualizada o inexistente</div></div>
+        <div class="ba-item"><div class="ba-icon">🔒</div><div class="ba-text">Conocimiento concentrado en personas clave</div></div>
+      </div>
+      <div class="ba-col">
+        <h3>✅ Con la plataforma</h3>
+        <div class="ba-item"><div class="ba-icon">⚡</div><div class="ba-text">Historias listas en 15 minutos en Azure Boards</div></div>
+        <div class="ba-item"><div class="ba-icon">📊</div><div class="ba-text">Reporte de sprint generado automáticamente</div></div>
+        <div class="ba-item"><div class="ba-icon">🔔</div><div class="ba-text">Alertas inmediatas con sugerencia de resolución</div></div>
+        <div class="ba-item"><div class="ba-icon">📚</div><div class="ba-text">Documentación generada al ritmo del desarrollo</div></div>
+        <div class="ba-item"><div class="ba-icon">🌐</div><div class="ba-text">Conocimiento distribuido en todo el equipo</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 09. ANÁLISIS COMPETITIVO ══ -->
+<section>
+  <div class="container">
+    <span class="section-num">09 — Análisis competitivo</span>
+    <h2>El mercado ya validó la idea.<br>Nosotros la hacemos propia.</h2>
+    <p>Existen herramientas comerciales que resuelven partes de este problema. Conocerlas confirma que la necesidad es real —y revela por qué una plataforma interna es la decisión más inteligente para Intempo.</p>
+
+    <!-- Cards de competidores -->
+    <div class="comp-intro">
+      <div class="comp-card highlight">
+        <div class="comp-logo">🏠</div>
+        <div class="comp-name">DevFlow · Intempo</div>
+        <div class="comp-type">Plataforma interna propia</div>
+        <div class="comp-cost" style="color:var(--teal)">~$20</div>
+        <div class="comp-cost-lbl">USD/mes · Solo API</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-logo">🤖</div>
+        <div class="comp-name">Copilot4DevOps</div>
+        <div class="comp-type">Extensión Azure DevOps</div>
+        <div class="comp-cost" style="color:var(--coral)">~$350</div>
+        <div class="comp-cost-lbl">USD/mes · 5 usuarios est.</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-logo">🐙</div>
+        <div class="comp-name">GitHub Copilot Enterprise</div>
+        <div class="comp-type">Microsoft · IA para desarrollo</div>
+        <div class="comp-cost" style="color:var(--coral)">~$750</div>
+        <div class="comp-cost-lbl">USD/mes · 5 usuarios est.</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-logo">☁️</div>
+        <div class="comp-name">AWS CodeGuru</div>
+        <div class="comp-type">Amazon · Revisión de código IA</div>
+        <div class="comp-cost" style="color:var(--amber)">~$150</div>
+        <div class="comp-cost-lbl">USD/mes · Uso estimado</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+
+      <!-- Radar de capacidades -->
+      <div class="chart-card">
+        <div class="chart-title">Capacidades por plataforma</div>
+        <div class="chart-sub">Puntuación 0–10 por dimensión · Pasa el cursor para ver valores</div>
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Barra de costos -->
+      <div class="chart-card">
+        <div class="chart-title">Costo mensual estimado (USD)</div>
+        <div class="chart-sub">Equipo de 5 desarrolladores · Todos los módulos activos</div>
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="costChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Ahorro acumulado -->
+      <div class="chart-card full">
+        <div class="chart-title">Ahorro acumulado proyectado vs. alternativa comercial</div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('vs-copilot4devops')">vs. Copilot4DevOps</button>
+          <button class="tab-btn" onclick="switchTab('vs-github')">vs. GitHub Copilot Enterprise</button>
+          <button class="tab-btn" onclick="switchTab('vs-aws')">vs. AWS CodeGuru</button>
+        </div>
+        <div id="vs-copilot4devops" class="tab-panel active">
+          <div class="chart-sub">Ahorro acumulado mes a mes comparado con Copilot4DevOps (~$350/mes)</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="savingsChart1"></canvas></div>
+        </div>
+        <div id="vs-github" class="tab-panel">
+          <div class="chart-sub">Ahorro acumulado mes a mes comparado con GitHub Copilot Enterprise (~$750/mes)</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="savingsChart2"></canvas></div>
+        </div>
+        <div id="vs-aws" class="tab-panel">
+          <div class="chart-sub">Ahorro acumulado mes a mes comparado con AWS CodeGuru (~$150/mes)</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="savingsChart3"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Matriz de features -->
+    <div class="chart-card" style="background:var(--ink2);border:1px solid var(--line2);border-radius:4px;padding:1.5rem;margin-top:1rem">
+      <div class="chart-title">Matriz de funcionalidades</div>
+      <div class="chart-sub" style="margin-bottom:0">Cobertura de capacidades por plataforma · Pasa el cursor sobre cada fila</div>
+      <table class="feat-matrix">
+        <thead>
+          <tr>
+            <th>Funcionalidad</th>
+            <th class="hl">DevFlow · Intempo</th>
+            <th>Copilot4DevOps</th>
+            <th>GitHub Copilot</th>
+            <th>AWS CodeGuru</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Generación de historias de usuario</td><td class="hl"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="partial">◑</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Formato personalizado por empresa</td><td class="hl"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Integración nativa Azure DevOps</td><td class="hl"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="partial">◑</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Reporte automático de sprint</td><td class="hl"><span class="check">✓</span></td><td><span class="partial">◑</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Monitor inteligente de pipelines</td><td class="hl"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="partial">◑</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Asistente de code review en PRs</td><td class="hl"><span class="check">✓</span></td><td><span class="partial">◑</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Documentación técnica automática</td><td class="hl"><span class="check">✓</span></td><td><span class="partial">◑</span></td><td><span class="partial">◑</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Integración con CRM interno</td><td class="hl"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Datos 100% en infraestructura propia</td><td class="hl"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Sin costo por usuario adicional</td><td class="hl"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:1rem;display:flex;gap:1.5rem;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--muted)"><span class="check">✓</span> Completo &nbsp; <span class="partial">◑</span> Parcial &nbsp; <span class="cross">✗</span> No disponible</span>
+      </div>
+    </div>
+
+    <div class="insight teal" style="margin-top:1rem">
+      <div class="insight-icon">💡</div>
+      <p><strong>DevFlow es el único sistema</strong> que combina formato personalizado, integración completa con Azure DevOps, datos en infraestructura propia y cero costo por usuario adicional. Ninguna alternativa comercial ofrece las cuatro dimensiones simultáneamente.</p>
+    </div>
+    <div class="insight amber" style="margin-top:.75rem">
+      <div class="insight-icon">📈</div>
+      <p><strong>El mercado ya validó la demanda:</strong> Copilot4DevOps existe y tiene tracción porque las empresas buscan exactamente esto. La diferencia es que ellos cobran licencias por usuario y tú construyes el conocimiento internamente en Intempo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10. CTA -->
+<section style="border-bottom:none;padding-bottom:5rem">
+  <div class="container">
+    <span class="section-num">10 — Próximos pasos</span>
+    <div class="cta-box">
+      <span class="label" style="display:block;margin-bottom:1rem">La decisión de hoy</span>
+      <h2>El prototipo puede estar<br>listo en 5 días hábiles.</h2>
+      <p>Aprobar la Fase 1 es de bajo riesgo y alto aprendizaje. En dos semanas el equipo tiene una herramienta real. Eso valida la visión completa con hechos, no con presentaciones.</p>
+      <div class="cta-pills">
+        <span class="cta-pill">Aprobar Fase 1 — Comenzar esta semana</span>
+        <span class="cta-pill outline">Agendar revisión técnica</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container"><div class="inner">
+    <div class="f-logo"><span class="f-dot"></span>INTEMPO · Área de Tecnología</div>
+    <p>Plataforma de Automatización del Ciclo de Desarrollo · 2025</p>
+    <span class="confidential">Confidencial</span>
+  </div></div>
+</footer>
+
+<script>
+// ── Chart.js global defaults ──
+Chart.defaults.color = '#8B909E';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 11;
+
+const teal   = '#00D4AA';
+const blue   = '#4A9EFF';
+const amber  = '#F5A623';
+const coral  = '#FF6B6B';
+const purple = '#A78BFA';
+
+// ── 1. RADAR ──
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+new Chart(radarCtx, {
+  type: 'radar',
+  data: {
+    labels: ['Azure DevOps', 'Formato\npropio', 'Sprint\nreporting', 'Monitor\npipelines', 'Code\nreview', 'Datos\ninternos', 'Costo-\neficiencia'],
+    datasets: [
+      {
+        label: 'DevFlow · Intempo',
+        data: [10, 10, 9, 9, 8, 10, 10],
+        borderColor: teal, backgroundColor: 'rgba(0,212,170,0.15)',
+        pointBackgroundColor: teal, borderWidth: 2, pointRadius: 4
+      },
+      {
+        label: 'Copilot4DevOps',
+        data: [9, 4, 6, 4, 5, 3, 4],
+        borderColor: blue, backgroundColor: 'rgba(74,158,255,0.08)',
+        pointBackgroundColor: blue, borderWidth: 1.5, pointRadius: 3
+      },
+      {
+        label: 'GitHub Copilot Enterprise',
+        data: [7, 3, 5, 7, 9, 2, 3],
+        borderColor: amber, backgroundColor: 'rgba(245,166,35,0.08)',
+        pointBackgroundColor: amber, borderWidth: 1.5, pointRadius: 3
+      },
+      {
+        label: 'AWS CodeGuru',
+        data: [2, 2, 3, 5, 9, 2, 5],
+        borderColor: coral, backgroundColor: 'rgba(255,107,107,0.08)',
+        pointBackgroundColor: coral, borderWidth: 1.5, pointRadius: 3
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      r: {
+        min: 0, max: 10,
+        ticks: { stepSize: 2, backdropColor: 'transparent', color: '#8B909E', font:{size:10} },
+        grid: { color: 'rgba(255,255,255,0.07)' },
+        angleLines: { color: 'rgba(255,255,255,0.07)' },
+        pointLabels: { color: '#E8EAF0', font: { size: 10, family:"'DM Sans',sans-serif" } }
+      }
+    },
+    plugins: {
+      legend: { position:'bottom', labels:{ boxWidth:10, padding:12, color:'#8B909E', font:{size:10} } },
+      tooltip: { backgroundColor:'#1C1F29', borderColor:'rgba(255,255,255,0.13)', borderWidth:1, padding:10,
+        callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}/10` } }
+    }
+  }
+});
+
+// ── 2. COST BAR ──
+const costCtx = document.getElementById('costChart').getContext('2d');
+new Chart(costCtx, {
+  type: 'bar',
+  data: {
+    labels: ['DevFlow\nIntempo', 'AWS\nCodeGuru', 'Copilot4\nDevOps', 'GitHub Copilot\nEnterprise'],
+    datasets: [{
+      label: 'USD / mes',
+      data: [20, 150, 350, 750],
+      backgroundColor: [teal, 'rgba(74,158,255,0.6)', 'rgba(245,166,35,0.6)', 'rgba(255,107,107,0.6)'],
+      borderColor:     [teal, blue, amber, coral],
+      borderWidth: 1, borderRadius: 3
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+    scales: {
+      x: { grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ callback: v=>'$'+v } },
+      y: { grid:{ display:false } }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor:'#1C1F29', borderColor:'rgba(255,255,255,0.13)', borderWidth:1, padding:10,
+        callbacks:{ label: ctx => ` $${ctx.raw} USD/mes` } }
+    }
+  }
+});
+
+// ── 3. SAVINGS LINE CHARTS ──
+const months = ['Mes 1','Mes 2','Mes 3','Mes 4','Mes 5','Mes 6','Mes 7','Mes 8','Mes 9','Mes 10','Mes 11','Mes 12'];
+const devflowCost = 20;
+
+function cumulativeSavings(competitorCost) {
+  return months.map((_,i) => (competitorCost - devflowCost) * (i+1));
+}
+
+function makeLineChart(id, competitorCost, competitorLabel, color) {
+  const ctx = document.getElementById(id).getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: `Ahorro acumulado vs. ${competitorLabel}`,
+          data: cumulativeSavings(competitorCost),
+          borderColor: teal, backgroundColor: 'rgba(0,212,170,0.08)',
+          fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: teal, borderWidth: 2
+        },
+        {
+          label: 'Costo acumulado ' + competitorLabel,
+          data: months.map((_,i)=> competitorCost*(i+1)),
+          borderColor: color, backgroundColor: 'transparent',
+          fill: false, tension: 0.3, pointRadius: 3, borderWidth: 1.5, borderDash:[4,4]
+        },
+        {
+          label: 'Costo acumulado DevFlow',
+          data: months.map((_,i)=> devflowCost*(i+1)),
+          borderColor: 'rgba(255,255,255,0.2)', backgroundColor: 'transparent',
+          fill: false, tension: 0.3, pointRadius: 2, borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      scales: {
+        x: { grid:{ color:'rgba(255,255,255,0.04)' } },
+        y: { grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ callback: v=>'$'+v } }
+      },
+      plugins: {
+        legend: { position:'bottom', labels:{ boxWidth:10, padding:10, font:{size:10} } },
+        tooltip: { backgroundColor:'#1C1F29', borderColor:'rgba(255,255,255,0.13)', borderWidth:1, padding:10,
+          callbacks:{ label: ctx => ` ${ctx.dataset.label}: $${ctx.raw} USD` } }
+      }
+    }
+  });
+}
+
+makeLineChart('savingsChart1', 350, 'Copilot4DevOps', blue);
+makeLineChart('savingsChart2', 750, 'GitHub Copilot Enterprise', amber);
+makeLineChart('savingsChart3', 150, 'AWS CodeGuru', coral);
+
+// ── Tab switcher ──
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
