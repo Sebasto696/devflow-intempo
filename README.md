@@ -140,7 +140,6 @@ PORT=3001
 Fase 1 — Semanas 1-2   ████████████████  Módulos 01 y 03  ✅
 Fase 2 — Semanas 3-8   ░░░░░░░░░░░░░░░░  Módulos 02, 04
 Fase 3 — Semanas 9-14  ░░░░░░░░░░░░░░░░  Módulo 05
-Fase 4 — Mes 4-6       ░░░░░░░░░░░░░░░░  Módulo 06
 ```
 
 ---
